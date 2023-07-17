@@ -1,24 +1,21 @@
 package io.vanslog.testcontainers.meilisearch;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MeilisearchContainerTest {
+/**
+ * Unit tests for {@link MeilisearchContainer}.
+ *
+ * @author Junghoon Ban
+ */
+@Testcontainers
+class MeilisearchContainerTest {
 
+  @Container
   private static final MeilisearchContainer meilisearchContainer = new MeilisearchContainer();
-
-  @BeforeAll
-  public static void setup() {
-    meilisearchContainer.start();
-  }
-
-  @AfterAll
-  public static void cleanup() {
-    meilisearchContainer.stop();
-  }
 
   @Test
   void shouldStartMeilisearch() {
