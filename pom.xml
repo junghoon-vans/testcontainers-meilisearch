@@ -7,4 +7,16 @@
   <groupId>io.vanslog</groupId>
   <artifactId>testcontainers-meilisearch</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+
+  <properties>
+    <testcontainers>1.18.0</testcontainers>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <version>${testcontainers}</version>
+    </dependency>
+  </dependencies>
 </project>
