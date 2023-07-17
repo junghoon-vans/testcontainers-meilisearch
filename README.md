@@ -1,4 +1,4 @@
-TestContainers Meilisearch
+Testcontainers Meilisearch
 ===
 
-A [TestContainers](https://www.testcontainers.org/) implementation for [Meilisearch](https://www.meilisearch.com/).
+A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisearch](https://www.meilisearch.com/).
