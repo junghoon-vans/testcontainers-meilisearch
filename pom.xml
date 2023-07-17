@@ -10,6 +10,8 @@
 
   <properties>
     <testcontainers>1.18.0</testcontainers>
+    <junit-jupiter>5.7.0</junit-jupiter>
+    <assertj-core>3.18.1</assertj-core>
   </properties>
 
   <dependencies>
@@ -17,6 +19,19 @@
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
       <version>${testcontainers}</version>
+    </dependency>
+    <!-- Test -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj-core}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
