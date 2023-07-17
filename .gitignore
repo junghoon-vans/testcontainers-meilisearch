@@ -1,0 +1,17 @@
+### MacOS ###
+.DS_Store
+
+### IDEA ###
+*.iml
+*.ipr
+*.iws
+.idea
+/.env
+
+### Eclipse ###
+.settings
+.classpath
+.project
+
+### Maven ###
+target/
