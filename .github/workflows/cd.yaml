@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Apache Maven Central
+      - name: Set up OSSRH credentials
         uses: actions/setup-java@v3
         with:
           java-version: 11
@@ -21,7 +21,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
 
-      - name: Deploy to Apache Maven Central
+      - name: Deploy to OSSRH
         run: mvn deploy -DskipTests -P release
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
