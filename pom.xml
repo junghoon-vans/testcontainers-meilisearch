@@ -8,6 +8,18 @@
   <artifactId>testcontainers-meilisearch</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
+  <name>testcontainers-meilisearch</name>
+  <description>Testcontainers Meilisearch</description>
+  <url>https://github.com/junghoon-vans/testcontainers-meilisearch</url>
+
+  <developers>
+    <developer>
+      <id>junghoon-vans</id>
+      <name>Junghoon Ban</name>
+      <email>junghoon.ban@gmail.com</email>
+    </developer>
+  </developers>
+
   <properties>
     <!-- Compiler -->
     <maven.compiler.source>11</maven.compiler.source>
@@ -55,4 +67,78 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.9.1</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.7</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://opensource.org/licenses/Apache-2.0</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/junghoon-vans/testcontainers-meilisearch</url>
+    <connection>scm:git:git://github.com/junghoon-vans/testcontainers-meilisearch.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/junghoon-vans/testcontainers-meilisearch</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/junghoon-vans/testcontainers-meilisearch/issues</url>
+  </issueManagement>
 </project>
