@@ -8,6 +8,18 @@
   <artifactId>testcontainers-meilisearch</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
+  <name>testcontainers-meilisearch</name>
+  <description>Testcontainers Meilisearch</description>
+  <url>https://github.com/junghoon-vans/testcontainers-meilisearch</url>
+
+  <developers>
+    <developer>
+      <id>junghoon-vans</id>
+      <name>Junghoon Ban</name>
+      <email>junghoon.ban@gmail.com</email>
+    </developer>
+  </developers>
+
   <properties>
     <!-- Compiler -->
     <maven.compiler.source>11</maven.compiler.source>
@@ -78,4 +90,23 @@
       </plugin>
     </plugins>
   </build>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://opensource.org/licenses/Apache-2.0</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/junghoon-vans/testcontainers-meilisearch</url>
+    <connection>scm:git:git://github.com/junghoon-vans/testcontainers-meilisearch.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/junghoon-vans/testcontainers-meilisearch</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/junghoon-vans/testcontainers-meilisearch/issues</url>
+  </issueManagement>
 </project>
