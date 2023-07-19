@@ -12,7 +12,7 @@ You can use the `@Container` annotation to start a Meilisearch container.
 
 ```java
 @Container
-MeiliSearchContainer container = new MeiliSearchContainer();
+MeilisearchContainer container = new MeilisearchContainer();
 ```
 
 ### Custom image
@@ -21,8 +21,15 @@ MeiliSearchContainer container = new MeiliSearchContainer();
 DockerImageName imageName = DockerImageName.parse("getmeili/meilisearch:latest");
 
 @Container
-MeiliSearchContainer container = new MeiliSearchContainer(imageName);
+MeilisearchContainer container = new MeilisearchContainer(imageName);
 ```
+
+### Set master key
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withMasterKey("masterKey");
 
 Dependency
 ---
