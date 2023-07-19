@@ -36,4 +36,14 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addExposedPort(MEILISEARCH_DEFAULT_PORT);
     this.withLogConsumer(new Slf4jLogConsumer(log));
   }
+
+  /**
+   * Configure master key
+   * @param masterKey A master key to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withMasterKey(String masterKey) {
+    this.addEnv("MEILI_MASTER_KEY", masterKey);
+    return self();
+  }
 }

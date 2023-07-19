@@ -15,7 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MeilisearchContainerTest {
 
   @Container
-  private static final MeilisearchContainer meilisearchContainer = new MeilisearchContainer();
+  private static final MeilisearchContainer meilisearchContainer = new MeilisearchContainer()
+      .withMasterKey("masterKey");
 
   @Test
   void shouldStartMeilisearch() {
