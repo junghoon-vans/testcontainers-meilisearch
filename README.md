@@ -1,6 +1,7 @@
 Testcontainers Meilisearch
 ===
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.vanslog/testcontainers-meilisearch.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.vanslog%22%20AND%20a:%22testcontainers-meilisearch%22)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
 ![](https://img.shields.io/github/license/junghoon-vans/testcontainers-meilisearch?label=License)
@@ -23,13 +24,11 @@ MeilisearchContainer container = new MeilisearchContainer();
 ### Custom image
 
 ```java
-DockerImageName imageName = DockerImageName.parse("getmeili/meilisearch:latest");
-
 @Container
-MeilisearchContainer container = new MeilisearchContainer(imageName);
+MeilisearchContainer container = new MeilisearchContainer(DockerImageName.parse("getmeili/meilisearch:latest"));
 ```
 
-### Set master key
+### Setup master key
 
 ```java
 @Container
@@ -37,43 +36,24 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
 ```
 
-Dependency
+Setup
 ---
 
-> **Note**
-> This project is not available in `Maven Central` repository.
-> So you need to add the `Sonatype Snapshots` repository to your build file.
+This library is available in Maven Central.
+You can add it as a dependency to your project using the following snippets.
 
 ### Gradle
 
 ```groovy
-// build.gradle
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-    }
-}
-
-testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.0-SNAPSHOT'
+testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.0'
 ```
 
 ### Maven
-
 ```xml
-<!-- pom.xml -->
-<repositories>
-    <repository>
-        <id>sonatype-snapshots</id>
-        <name>Sonatype Snapshots</name>
-        <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-    </repository>
-</repositories>
-
 <dependency>
     <groupId>io.vanslog</groupId>
     <artifactId>testcontainers-meilisearch</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
