@@ -1,6 +1,11 @@
 Testcontainers Meilisearch
 ===
 
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
+![](https://img.shields.io/github/license/junghoon-vans/testcontainers-meilisearch?label=License)
+![](https://img.shields.io/badge/meilisearch-1.2.0-blue)
+
 A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisearch](https://www.meilisearch.com/).
 
 How to use
