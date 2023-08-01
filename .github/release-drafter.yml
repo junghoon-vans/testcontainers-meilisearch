@@ -6,7 +6,10 @@ categories:
   - title: '🐛 Bug Fixes'
     label: 'fix'
   - title: '🛠️ Maintenance'
-    label: 'chore'
+    labels: ['chore', 'refactor', 'style']
+  - title: '📝 Documentation'
+    label: 'documentation'
+
 exclude-labels:
   - 'skip-changelog'
 template: |
