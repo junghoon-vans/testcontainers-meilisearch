@@ -5,7 +5,7 @@ Testcontainers Meilisearch
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
 ![LICENSE](https://img.shields.io/github/license/junghoon-vans/testcontainers-meilisearch?label=License)
-[![DockerHub](https://img.shields.io/badge/meilisearch-v1.2.0-blue)](https://hub.docker.com/layers/getmeili/meilisearch/v1.2.0/images/sha256-2b5600564f7fa4b77fc7d968a8049c4af366568a161d17afdb04440d12a2e705?context=explore)
+[![DockerHub](https://img.shields.io/badge/meilisearch-v1.3.0-blue)](https://hub.docker.com/layers/getmeili/meilisearch/v1.3.0/images/sha256-f917749f925fe4107bca2473e7ed7405de5a18ad28caaf3e8cbd590f1eb27172?context=explore)
 
 A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisearch](https://www.meilisearch.com/).
 
@@ -53,7 +53,7 @@ testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.0'
 <dependency>
     <groupId>io.vanslog</groupId>
     <artifactId>testcontainers-meilisearch</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>test</scope>
 </dependency>
 ```
