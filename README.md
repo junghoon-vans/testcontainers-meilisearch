@@ -5,7 +5,7 @@ Testcontainers Meilisearch
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=coverage)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch)
 ![LICENSE](https://img.shields.io/github/license/junghoon-vans/testcontainers-meilisearch?label=License)
-[![DockerHub](https://img.shields.io/badge/meilisearch-v1.3.0-blue)](https://hub.docker.com/layers/getmeili/meilisearch/v1.3.0/images/sha256-f917749f925fe4107bca2473e7ed7405de5a18ad28caaf3e8cbd590f1eb27172?context=explore)
+[![DockerHub](https://img.shields.io/badge/meilisearch-v1.3.2-blue)](https://hub.docker.com/layers/getmeili/meilisearch/v1.3.2/images/sha256-576e2dd613337c87310ce292c2da7c00578e972984ad9ce2fdb14a5490b4248f?context=explore)
 
 A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisearch](https://www.meilisearch.com/).
 
