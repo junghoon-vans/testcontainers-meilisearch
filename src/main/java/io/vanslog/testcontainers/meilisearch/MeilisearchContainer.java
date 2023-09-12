@@ -13,7 +13,7 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
 
   private static final int MEILISEARCH_DEFAULT_PORT = 7700;
   private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("getmeili/meilisearch");
-  private static final String DEFAULT_IMAGE_TAG = "v1.3.2";
+  private static final String DEFAULT_IMAGE_TAG = "v1.3.3";
 
   /**
    * Create a Meilisearch container with default settings
