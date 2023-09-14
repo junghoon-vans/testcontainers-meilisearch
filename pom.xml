@@ -30,10 +30,10 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <!-- Dependencies -->
-    <testcontainers>1.18.0</testcontainers>
-    <junit-jupiter>5.7.0</junit-jupiter>
-    <assertj-core>3.18.1</assertj-core>
-    <logback>1.2.9</logback>
+    <testcontainers>1.19.0</testcontainers>
+    <junit-jupiter>5.10.0</junit-jupiter>
+    <assertj-core>3.24.2</assertj-core>
+    <logback>1.4.11</logback>
   </properties>
 
   <dependencies>
