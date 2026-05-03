@@ -57,3 +57,15 @@ testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.5'
     <scope>test</scope>
 </dependency>
 ```
+
+Release lanes
+---
+
+This project publishes separate release lanes for Testcontainers compatibility:
+
+| Branch | Release tags | Purpose |
+| --- | --- | --- |
+| `1.x` | `v1.*` | Maintenance line for Testcontainers 1.x |
+| `main` | `v2.*` | Active line for Testcontainers 2.x |
+
+Snapshot deployments run from pushes to `main` and `1.x` when the Maven project version ends with `-SNAPSHOT`. Stable releases are deployed only when publishing a GitHub Release whose tag matches the target branch, for example `v1.0.7` from `1.x` or `v2.0.0` from `main`.
