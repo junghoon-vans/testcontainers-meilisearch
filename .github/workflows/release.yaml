@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify release lane
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${TAG#v}"
+
+          if [[ "$TAG" != v* ]]; then
+            echo "Release tags must use the v<version> format, got: $TAG"
+            exit 1
+          fi
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Release tag must be semantic version compatible, got: $TAG"
+            exit 1
+          fi
+
+          case "$VERSION" in
+            2.*)
+              TARGET="main"
+              ;;
+            1.*)
+              TARGET="1.x"
+              ;;
+            *)
+              echo "Release tags must be v1.* or v2.*, got: $TAG"
+              exit 1
+              ;;
+          esac
+
+          echo "RELEASE_TARGET=$TARGET" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: Verify released commit is on target branch
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          git fetch origin "refs/heads/$RELEASE_TARGET:refs/remotes/origin/$RELEASE_TARGET" "refs/tags/$TAG:refs/tags/$TAG"
+          if ! git merge-base --is-ancestor "refs/tags/$TAG" "origin/$RELEASE_TARGET"; then
+            echo "Release tag $TAG is not contained in origin/$RELEASE_TARGET"
+            exit 1
+          fi
+
+      - name: Set up OSSRH credentials
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: ossrh
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+      - name: Set release version
+        run: ./mvnw -B -ntp versions:set -DnewVersion="$RELEASE_VERSION" -DgenerateBackupPoms=false
+
+      - name: Verify release build
+        run: ./mvnw -B -ntp verify
+
+      - name: Deploy to OSSRH
+        run: ./mvnw -B -ntp -DskipTests deploy -P release
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
