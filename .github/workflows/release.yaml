@@ -58,15 +58,26 @@ jobs:
             exit 1
           fi
 
-      - name: Set up OSSRH credentials
+      - name: Verify Central Publishing secrets
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+        run: |
+          if [[ -z "$CENTRAL_USERNAME" || -z "$CENTRAL_TOKEN" ]]; then
+            echo "CENTRAL_USERNAME and CENTRAL_TOKEN repository secrets are required for Central Publishing."
+            echo "Create a Sonatype Central Portal user token and save it as those secrets."
+            exit 1
+          fi
+
+      - name: Set up Central Publishing credentials
         uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 17
           distribution: 'temurin'
           cache: 'maven'
-          server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
 
@@ -76,9 +87,14 @@ jobs:
       - name: Verify release build
         run: ./mvnw -B -ntp verify
 
-      - name: Deploy to OSSRH
-        run: ./mvnw -B -ntp -DskipTests deploy -P release
+      - name: Deploy to Central Publishing
+        run: ./mvnw -B -ntp -DskipTests deploy -P central
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_OPTS: >
+            --add-opens=java.base/java.util=ALL-UNNAMED
+            --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens=java.base/java.text=ALL-UNNAMED
+            --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
