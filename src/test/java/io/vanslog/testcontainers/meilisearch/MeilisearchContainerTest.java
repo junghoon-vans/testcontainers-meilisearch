@@ -24,12 +24,19 @@ class MeilisearchContainerTest {
   }
 
   @Test
-  void shouldGetHost() {
-    assertThat(meilisearchContainer.getHost()).isEqualTo("localhost");
+  void shouldGetEndpoint() {
+    assertThat(meilisearchContainer.getEndpoint())
+        .startsWith("http://")
+        .contains(":" + meilisearchContainer.getMappedPort(7700));
   }
 
   @Test
   void getPort() {
     assertThat(meilisearchContainer.getMappedPort(7700)).isNotNull();
+  }
+
+  @Test
+  void shouldGetMasterKey() {
+    assertThat(meilisearchContainer.getMasterKey()).isEqualTo("masterKey");
   }
 }
