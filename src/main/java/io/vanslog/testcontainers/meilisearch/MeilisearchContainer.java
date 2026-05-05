@@ -54,6 +54,25 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   }
 
   /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(MeilisearchEnvMode envMode) {
+    return withEnvMode(envMode.getValue());
+  }
+
+  /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(String envMode) {
+    this.addEnv("MEILI_ENV", envMode);
+    return self();
+  }
+
+  /**
    * Configure the Meilisearch log level.
    * @param logLevel The log level to use
    * @return The current instance of the Meilisearch container

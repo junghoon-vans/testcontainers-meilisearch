@@ -37,6 +37,14 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
 ```
 
+### Configure environment mode
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withEnvMode(MeilisearchEnvMode.DEVELOPMENT);
+```
+
 ### Configure log level
 
 ```java
