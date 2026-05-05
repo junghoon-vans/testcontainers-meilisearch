@@ -44,6 +44,13 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldConfigureEnvMode() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withEnvMode("development")) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_ENV", "development");
+    }
+  }
+
+  @Test
   void shouldRejectIncompatibleImage() {
     DockerImageName redisImage = DockerImageName.parse("redis:7");
 

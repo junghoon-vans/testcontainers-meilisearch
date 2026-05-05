@@ -37,6 +37,14 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
 ```
 
+### Configure environment mode
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withEnvMode("development");
+```
+
 ### Java SDK client setup
 
 The container exposes helpers for the Meilisearch Java SDK:
