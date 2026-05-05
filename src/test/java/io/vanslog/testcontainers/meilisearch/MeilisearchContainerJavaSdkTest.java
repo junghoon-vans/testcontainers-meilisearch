@@ -20,8 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MeilisearchContainerJavaSdkTest {
 
   @Container
-  private static final MeilisearchContainer meilisearchContainer = new MeilisearchContainer()
-      .withMasterKey("masterKey");
+  private static final MeilisearchContainer meilisearchContainer = createMeilisearchContainer();
+
+  @SuppressWarnings("resource")
+  private static MeilisearchContainer createMeilisearchContainer() {
+    return new MeilisearchContainer().withMasterKey("masterKey");
+  }
 
   @Test
   void shouldUseMeilisearchJavaSdk() throws Exception {
