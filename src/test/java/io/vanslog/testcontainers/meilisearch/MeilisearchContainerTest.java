@@ -3,8 +3,10 @@ package io.vanslog.testcontainers.meilisearch;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for {@link MeilisearchContainer}.
@@ -12,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Junghoon Ban
  */
 @Testcontainers
+@SuppressWarnings("resource")
 class MeilisearchContainerTest {
 
   @Container
@@ -39,4 +42,16 @@ class MeilisearchContainerTest {
   void shouldGetMasterKey() {
     assertThat(meilisearchContainer.getMasterKey()).isEqualTo("masterKey");
   }
+
+  @Test
+  void shouldRejectIncompatibleImage() {
+    DockerImageName redisImage = DockerImageName.parse("redis:7");
+
+    assertThatThrownBy(() -> {
+      try (MeilisearchContainer ignored = new MeilisearchContainer(redisImage)) {
+      }
+    })
+        .isInstanceOf(IllegalStateException.class);
+  }
+
 }
