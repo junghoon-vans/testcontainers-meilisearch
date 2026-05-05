@@ -12,7 +12,7 @@ A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisea
 How to use
 ---
 
-You can use the `@Container` annotation to start a Meilisearch container.
+Use the `@Container` annotation to start a Meilisearch container in your tests.
 
 ### Default image
 
@@ -25,7 +25,8 @@ MeilisearchContainer container = new MeilisearchContainer();
 
 ```java
 @Container
-MeilisearchContainer container = new MeilisearchContainer(DockerImageName.parse("getmeili/meilisearch:latest"));
+MeilisearchContainer container = new MeilisearchContainer(
+    DockerImageName.parse("getmeili/meilisearch:v1.3.4"));
 ```
 
 ### Configure master key
@@ -34,6 +35,45 @@ MeilisearchContainer container = new MeilisearchContainer(DockerImageName.parse(
 @Container
 MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
+```
+
+### Java SDK client setup
+
+The container exposes helpers for the Meilisearch Java SDK:
+
+```java
+Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
+```
+
+### Index documents and wait for tasks
+
+```java
+@Container
+static MeilisearchContainer container = new MeilisearchContainer()
+    .withMasterKey("masterKey");
+
+Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
+String indexUid = "movies";
+Index index = client.index(indexUid);
+
+TaskInfo createIndexTask = client.createIndex(indexUid, "id");
+index.waitForTask(createIndexTask.getTaskUid(), 15000, 100);
+
+String documents = "["
+    + "{\"id\":1,\"title\":\"Dune\"},"
+    + "{\"id\":2,\"title\":\"Foundation\"}"
+    + "]";
+TaskInfo addDocumentsTask = index.addDocuments(documents);
+index.waitForTask(addDocumentsTask.getTaskUid(), 15000, 100);
+```
+
+### Import a dump fixture
+
+```java
+@Container
+static MeilisearchContainer container = new MeilisearchContainer()
+    .withMasterKey("masterKey")
+    .withDumpImport("meilisearch/fixtures/movies.dump");
 ```
 
 Setup
@@ -54,6 +94,17 @@ testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.5'
     <groupId>io.vanslog</groupId>
     <artifactId>testcontainers-meilisearch</artifactId>
     <version>1.0.5</version>
+    <scope>test</scope>
+</dependency>
+```
+
+If you use the Meilisearch Java SDK in tests, add:
+
+```xml
+<dependency>
+    <groupId>com.meilisearch.sdk</groupId>
+    <artifactId>meilisearch-java</artifactId>
+    <version>0.15.0</version>
     <scope>test</scope>
 </dependency>
 ```
