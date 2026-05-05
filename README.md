@@ -37,6 +37,14 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
 ```
 
+### Disable analytics
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withNoAnalytics();
+```
+
 ### Java SDK client setup
 
 The container exposes helpers for the Meilisearch Java SDK:
