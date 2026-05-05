@@ -85,7 +85,7 @@ You can add it as a dependency to your project using the following snippets.
 ### Gradle
 
 ```groovy
-testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.5'
+testImplementation 'io.vanslog:testcontainers-meilisearch:1.1.0'
 ```
 
 ### Maven
@@ -93,18 +93,18 @@ testImplementation 'io.vanslog:testcontainers-meilisearch:1.0.5'
 <dependency>
     <groupId>io.vanslog</groupId>
     <artifactId>testcontainers-meilisearch</artifactId>
-    <version>1.0.5</version>
+    <version>1.1.0</version>
     <scope>test</scope>
 </dependency>
 ```
 
-If you use the Meilisearch Java SDK in tests, add:
+If you use the Meilisearch Java SDK in tests on Java 17 or later, add:
 
 ```xml
 <dependency>
     <groupId>com.meilisearch.sdk</groupId>
     <artifactId>meilisearch-java</artifactId>
-    <version>0.15.0</version>
+    <version>0.20.1</version>
     <scope>test</scope>
 </dependency>
 ```
