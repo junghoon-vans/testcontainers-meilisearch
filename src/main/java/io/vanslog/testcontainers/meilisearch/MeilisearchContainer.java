@@ -14,9 +14,14 @@ import org.testcontainers.utility.MountableFile;
 public class MeilisearchContainer extends GenericContainer<MeilisearchContainer> {
 
   private static final int MEILISEARCH_DEFAULT_PORT = 7700;
-  private static final String DUMP_IMPORT_PATH = "/meili_data/dumps/import.dump";
+  private static final String DUMP_IMPORT_PATH = importPath("dumps", "import.dump");
+  private static final String SNAPSHOT_IMPORT_PATH = importPath("snapshots", "import.snapshot");
   private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("getmeili/meilisearch");
   private static final String DEFAULT_IMAGE_TAG = "v1.43.0";
+
+  private static String importPath(String directory, String fileName) {
+    return String.join("/", "", "meili_data", directory, fileName);
+  }
 
   /**
    * Create a Meilisearch container with default settings
@@ -47,7 +52,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
-
   /**
    * Configure the Meilisearch environment mode.
    * @param envMode The environment mode to use
@@ -55,6 +59,15 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    */
   public MeilisearchContainer withEnvMode(String envMode) {
     this.addEnv("MEILI_ENV", envMode);
+    return self();
+  }
+
+  /**
+   * Disable Meilisearch analytics for this container.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withNoAnalytics() {
+    this.addEnv("MEILI_NO_ANALYTICS", "true");
     return self();
   }
 
@@ -75,6 +88,26 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   public MeilisearchContainer withDumpImport(MountableFile dumpFile) {
     this.withCopyFileToContainer(dumpFile, DUMP_IMPORT_PATH);
     this.withCommand("meilisearch", "--import-dump", DUMP_IMPORT_PATH);
+    return self();
+  }
+
+  /**
+   * Import a snapshot fixture from the test classpath when Meilisearch starts.
+   * @param classpathResource The snapshot resource to import
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withSnapshotImport(String classpathResource) {
+    return withSnapshotImport(MountableFile.forClasspathResource(classpathResource));
+  }
+
+  /**
+   * Import a snapshot fixture when Meilisearch starts.
+   * @param snapshotFile The snapshot file to import
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withSnapshotImport(MountableFile snapshotFile) {
+    this.withCopyFileToContainer(snapshotFile, SNAPSHOT_IMPORT_PATH);
+    this.withCommand("meilisearch", "--import-snapshot", SNAPSHOT_IMPORT_PATH);
     return self();
   }
 

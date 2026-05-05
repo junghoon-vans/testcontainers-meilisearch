@@ -51,6 +51,13 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldDisableAnalytics() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withNoAnalytics()) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_NO_ANALYTICS", "true");
+    }
+  }
+
+  @Test
   void shouldRejectIncompatibleImage() {
     DockerImageName redisImage = DockerImageName.parse("redis:7");
 
