@@ -59,6 +59,21 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldConfigureLogLevel() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withLogLevel("DEBUG")) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_LOG_LEVEL", "DEBUG");
+    }
+  }
+
+  @Test
+  void shouldConfigureTypedLogLevel() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withLogLevel(MeilisearchLogLevel.TRACE)) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_LOG_LEVEL", "TRACE");
+    }
+  }
+
+  @Test
   void shouldDisableAnalytics() {
     try (MeilisearchContainer container = new MeilisearchContainer().withNoAnalytics()) {
       assertThat(container.getEnvMap()).containsEntry("MEILI_NO_ANALYTICS", "true");

@@ -45,6 +45,14 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withEnvMode(MeilisearchEnvMode.DEVELOPMENT);
 ```
 
+### Configure log level
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withLogLevel(MeilisearchLogLevel.DEBUG);
+```
+
 ### Disable analytics
 
 ```java

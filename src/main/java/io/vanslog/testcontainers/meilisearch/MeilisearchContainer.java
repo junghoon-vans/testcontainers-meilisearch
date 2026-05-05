@@ -73,6 +73,25 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   }
 
   /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(MeilisearchLogLevel logLevel) {
+    return withLogLevel(logLevel.getValue());
+  }
+
+  /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(String logLevel) {
+    this.addEnv("MEILI_LOG_LEVEL", logLevel);
+    return self();
+  }
+
+  /**
    * Disable Meilisearch analytics for this container.
    * @return The current instance of the Meilisearch container
    */
