@@ -52,6 +52,16 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
+
+  /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(MeilisearchEnvMode envMode) {
+    return withEnvMode(envMode.getValue());
+  }
+
   /**
    * Configure the Meilisearch environment mode.
    * @param envMode The environment mode to use
