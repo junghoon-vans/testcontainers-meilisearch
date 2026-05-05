@@ -14,7 +14,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   private static final int MEILISEARCH_DEFAULT_PORT = 7700;
   private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("getmeili/meilisearch");
   private static final String DEFAULT_IMAGE_TAG = "v1.3.4";
-  private String masterKey;
 
   /**
    * Create a Meilisearch container with default settings
@@ -38,7 +37,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withMasterKey(String masterKey) {
-    this.masterKey = masterKey;
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
@@ -56,6 +54,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The configured master key, or {@code null} when none was configured
    */
   public String getMasterKey() {
-    return masterKey;
+    return getEnvMap().get("MEILI_MASTER_KEY");
   }
 }
