@@ -45,4 +45,20 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
+
+  /**
+   * Get the HTTP endpoint for the running Meilisearch container.
+   * @return The HTTP endpoint to use with Meilisearch clients
+   */
+  public String getEndpoint() {
+    return "http://" + getHost() + ":" + getMappedPort(MEILISEARCH_DEFAULT_PORT);
+  }
+
+  /**
+   * Get the configured master key.
+   * @return The configured master key, or {@code null} when none was configured
+   */
+  public String getMasterKey() {
+    return getEnvMap().get("MEILI_MASTER_KEY");
+  }
 }
