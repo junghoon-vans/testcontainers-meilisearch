@@ -44,6 +44,13 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldConfigureLogLevel() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withLogLevel("DEBUG")) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_LOG_LEVEL", "DEBUG");
+    }
+  }
+
+  @Test
   void shouldRejectIncompatibleImage() {
     DockerImageName redisImage = DockerImageName.parse("redis:7");
 

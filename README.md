@@ -37,6 +37,14 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
 ```
 
+### Configure log level
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withLogLevel("DEBUG");
+```
+
 ### Java SDK client setup
 
 The container exposes helpers for the Meilisearch Java SDK:

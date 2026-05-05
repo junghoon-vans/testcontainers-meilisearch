@@ -47,6 +47,17 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
+
+  /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(String logLevel) {
+    this.addEnv("MEILI_LOG_LEVEL", logLevel);
+    return self();
+  }
+
   /**
    * Import a dump fixture from the test classpath when Meilisearch starts.
    * @param classpathResource The dump resource to import
