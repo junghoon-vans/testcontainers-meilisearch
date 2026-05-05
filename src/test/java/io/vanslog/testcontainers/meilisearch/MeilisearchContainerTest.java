@@ -3,8 +3,10 @@ package io.vanslog.testcontainers.meilisearch;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Unit tests for {@link MeilisearchContainer}.
@@ -31,5 +33,13 @@ class MeilisearchContainerTest {
   @Test
   void getPort() {
     assertThat(meilisearchContainer.getMappedPort(7700)).isNotNull();
+  }
+
+  @Test
+  void shouldRejectIncompatibleImage() {
+    DockerImageName redisImage = DockerImageName.parse("redis:7");
+
+    assertThatThrownBy(() -> new MeilisearchContainer(redisImage))
+        .isInstanceOf(IllegalStateException.class);
   }
 }
