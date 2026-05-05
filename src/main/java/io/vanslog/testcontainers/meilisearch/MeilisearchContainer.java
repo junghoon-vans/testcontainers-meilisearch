@@ -1,5 +1,7 @@
 package io.vanslog.testcontainers.meilisearch;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -18,6 +20,17 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   private static final String SNAPSHOT_IMPORT_PATH = importPath("snapshots", "import.snapshot");
   private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("getmeili/meilisearch");
   private static final String DEFAULT_IMAGE_TAG = "v1.43.0";
+
+  private ImportType importType;
+  private boolean ignoreMissingDump;
+  private boolean ignoreDumpIfDbExists;
+  private boolean ignoreMissingSnapshot;
+  private boolean ignoreSnapshotIfDbExists;
+
+  private enum ImportType {
+    DUMP,
+    SNAPSHOT
+  }
 
   private static String importPath(String directory, String fileName) {
     return String.join("/", "", "meili_data", directory, fileName);
@@ -78,7 +91,28 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    */
   public MeilisearchContainer withDumpImport(MountableFile dumpFile) {
     this.withCopyFileToContainer(dumpFile, DUMP_IMPORT_PATH);
-    this.withCommand("meilisearch", "--import-dump", DUMP_IMPORT_PATH);
+    this.importType = ImportType.DUMP;
+    configureImportCommand();
+    return self();
+  }
+
+  /**
+   * Start normally when the configured dump fixture is missing.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreMissingDump() {
+    this.ignoreMissingDump = true;
+    configureImportCommand();
+    return self();
+  }
+
+  /**
+   * Start with the existing database when a dump fixture is configured and data already exists.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreDumpIfDbExists() {
+    this.ignoreDumpIfDbExists = true;
+    configureImportCommand();
     return self();
   }
 
@@ -98,8 +132,56 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    */
   public MeilisearchContainer withSnapshotImport(MountableFile snapshotFile) {
     this.withCopyFileToContainer(snapshotFile, SNAPSHOT_IMPORT_PATH);
-    this.withCommand("meilisearch", "--import-snapshot", SNAPSHOT_IMPORT_PATH);
+    this.importType = ImportType.SNAPSHOT;
+    configureImportCommand();
     return self();
+  }
+
+  /**
+   * Start normally when the configured snapshot fixture is missing.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreMissingSnapshot() {
+    this.ignoreMissingSnapshot = true;
+    configureImportCommand();
+    return self();
+  }
+
+  /**
+   * Start with the existing database when a snapshot fixture is configured and data already exists.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreSnapshotIfDbExists() {
+    this.ignoreSnapshotIfDbExists = true;
+    configureImportCommand();
+    return self();
+  }
+
+  private void configureImportCommand() {
+    if (importType == null) {
+      return;
+    }
+
+    List<String> command = new ArrayList<>();
+    command.add("meilisearch");
+    if (importType == ImportType.DUMP) {
+      command.add("--import-dump");
+      command.add(DUMP_IMPORT_PATH);
+      addFlag(command, ignoreMissingDump, "--ignore-missing-dump");
+      addFlag(command, ignoreDumpIfDbExists, "--ignore-dump-if-db-exists");
+    } else {
+      command.add("--import-snapshot");
+      command.add(SNAPSHOT_IMPORT_PATH);
+      addFlag(command, ignoreMissingSnapshot, "--ignore-missing-snapshot");
+      addFlag(command, ignoreSnapshotIfDbExists, "--ignore-snapshot-if-db-exists");
+    }
+    this.withCommand(command.toArray(new String[0]));
+  }
+
+  private static void addFlag(List<String> command, boolean enabled, String flag) {
+    if (enabled) {
+      command.add(flag);
+    }
   }
 
   /**

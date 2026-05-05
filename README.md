@@ -97,6 +97,25 @@ Snapshots are exact copies of Meilisearch data and must be created with the same
 Meilisearch version as the container image that imports them. Use dumps when you
 need a fixture that can move across Meilisearch versions.
 
+Dump and snapshot imports are strict by default. Add the matching helpers when
+you want Meilisearch to ignore missing import files or keep an existing database:
+
+```java
+@Container
+static MeilisearchContainer container = new MeilisearchContainer()
+    .withDumpImport("meilisearch/fixtures/movies.dump")
+    .withIgnoreMissingDump()
+    .withIgnoreDumpIfDbExists();
+```
+
+```java
+@Container
+static MeilisearchContainer container = new MeilisearchContainer()
+    .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
+    .withIgnoreMissingSnapshot()
+    .withIgnoreSnapshotIfDbExists();
+```
+
 Setup
 ---
 
