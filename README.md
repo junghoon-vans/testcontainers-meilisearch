@@ -5,7 +5,7 @@ Testcontainers Meilisearch
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=sqale_rating&branch=1.x)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch&branch=1.x)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=testcontainers-meilisearch&metric=coverage&branch=1.x)](https://sonarcloud.io/summary/new_code?id=testcontainers-meilisearch&branch=1.x)
 ![LICENSE](https://img.shields.io/github/license/junghoon-vans/testcontainers-meilisearch?label=License)
-[![DockerHub](https://img.shields.io/badge/meilisearch-v1.3.4-blue)](https://hub.docker.com/layers/getmeili/meilisearch/v1.3.4/images/sha256-3a577f9952b1c9886adbea3742de012ca202bbe69a7943695b6edd8073425376?context=explore)
+[![DockerHub](https://img.shields.io/badge/meilisearch-v1.43.0-blue)](https://hub.docker.com/r/getmeili/meilisearch/tags?name=v1.43.0)
 
 A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisearch](https://www.meilisearch.com/).
 
@@ -26,7 +26,7 @@ MeilisearchContainer container = new MeilisearchContainer();
 ```java
 @Container
 MeilisearchContainer container = new MeilisearchContainer(
-    DockerImageName.parse("getmeili/meilisearch:v1.3.4"));
+    DockerImageName.parse("getmeili/meilisearch:v1.43.0"));
 ```
 
 ### Configure master key
