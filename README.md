@@ -42,7 +42,7 @@ MeilisearchContainer container = new MeilisearchContainer()
 ```java
 @Container
 MeilisearchContainer container = new MeilisearchContainer()
-    .withEnvMode("development");
+    .withEnvMode(MeilisearchEnvMode.DEVELOPMENT);
 ```
 
 ### Disable analytics
