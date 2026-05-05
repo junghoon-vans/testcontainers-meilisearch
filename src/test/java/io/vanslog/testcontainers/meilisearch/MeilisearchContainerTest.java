@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Junghoon Ban
  */
 @Testcontainers
+@SuppressWarnings("resource")
 class MeilisearchContainerTest {
 
   @Container
@@ -26,8 +27,10 @@ class MeilisearchContainerTest {
   }
 
   @Test
-  void shouldGetHost() {
-    assertThat(meilisearchContainer.getHost()).isEqualTo("localhost");
+  void shouldGetEndpoint() {
+    assertThat(meilisearchContainer.getEndpoint())
+        .startsWith("http://")
+        .contains(":" + meilisearchContainer.getMappedPort(7700));
   }
 
   @Test
@@ -36,10 +39,19 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldGetMasterKey() {
+    assertThat(meilisearchContainer.getMasterKey()).isEqualTo("masterKey");
+  }
+
+  @Test
   void shouldRejectIncompatibleImage() {
     DockerImageName redisImage = DockerImageName.parse("redis:7");
 
-    assertThatThrownBy(() -> new MeilisearchContainer(redisImage))
+    assertThatThrownBy(() -> {
+      try (MeilisearchContainer ignored = new MeilisearchContainer(redisImage)) {
+      }
+    })
         .isInstanceOf(IllegalStateException.class);
   }
+
 }
