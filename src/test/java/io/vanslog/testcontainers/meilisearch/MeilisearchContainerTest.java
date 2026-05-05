@@ -44,6 +44,21 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldConfigureEnvMode() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withEnvMode("development")) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_ENV", "development");
+    }
+  }
+
+  @Test
+  void shouldConfigureTypedEnvMode() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withEnvMode(MeilisearchEnvMode.PRODUCTION)) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_ENV", "production");
+    }
+  }
+
+  @Test
   void shouldDisableAnalytics() {
     try (MeilisearchContainer container = new MeilisearchContainer().withNoAnalytics()) {
       assertThat(container.getEnvMap()).containsEntry("MEILI_NO_ANALYTICS", "true");
