@@ -76,6 +76,19 @@ static MeilisearchContainer container = new MeilisearchContainer()
     .withDumpImport("meilisearch/fixtures/movies.dump");
 ```
 
+### Import a snapshot fixture
+
+```java
+@Container
+static MeilisearchContainer container = new MeilisearchContainer()
+    .withMasterKey("masterKey")
+    .withSnapshotImport("meilisearch/fixtures/movies.snapshot");
+```
+
+Snapshots are exact copies of Meilisearch data and must be created with the same
+Meilisearch version as the container image that imports them. Use dumps when you
+need a fixture that can move across Meilisearch versions.
+
 Setup
 ---
 
