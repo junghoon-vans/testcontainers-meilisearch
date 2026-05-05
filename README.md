@@ -42,7 +42,7 @@ MeilisearchContainer container = new MeilisearchContainer()
 ```java
 @Container
 MeilisearchContainer container = new MeilisearchContainer()
-    .withLogLevel("DEBUG");
+    .withLogLevel(MeilisearchLogLevel.DEBUG);
 ```
 
 ### Disable analytics
