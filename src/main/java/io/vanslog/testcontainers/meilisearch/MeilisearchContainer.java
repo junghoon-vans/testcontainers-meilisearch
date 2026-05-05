@@ -1,6 +1,7 @@
 package io.vanslog.testcontainers.meilisearch;
 
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 /**
@@ -28,7 +29,11 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    */
   public MeilisearchContainer(DockerImageName dockerImageName) {
     super(dockerImageName);
+    dockerImageName.assertCompatibleWith(DEFAULT_IMAGE_NAME);
     this.addExposedPort(MEILISEARCH_DEFAULT_PORT);
+    this.waitingFor(Wait.forHttp("/health")
+        .forPort(MEILISEARCH_DEFAULT_PORT)
+        .forStatusCode(200));
   }
 
   /**
