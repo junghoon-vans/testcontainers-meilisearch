@@ -146,6 +146,18 @@ If you use the Meilisearch Java SDK in tests on Java 17 or later, add:
 </dependency>
 ```
 
+Development
+---
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, verification commands,
+branch lanes, and Testcontainers testing notes.
+
+Releasing
+---
+
+See [RELEASING.md](RELEASING.md) for stable release, snapshot deployment, and
+post-release version bump steps.
+
 Release lanes
 ---
 
