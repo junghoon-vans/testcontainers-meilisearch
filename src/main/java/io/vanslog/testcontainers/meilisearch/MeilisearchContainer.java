@@ -47,7 +47,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
-
   /**
    * Import a dump fixture from the test classpath when Meilisearch starts.
    * @param classpathResource The dump resource to import
