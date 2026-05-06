@@ -37,6 +37,22 @@ MeilisearchContainer container = new MeilisearchContainer()
     .withMasterKey("masterKey");
 ```
 
+### Configure environment mode
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withEnvMode(MeilisearchEnvMode.DEVELOPMENT);
+```
+
+### Configure log level
+
+```java
+@Container
+MeilisearchContainer container = new MeilisearchContainer()
+    .withLogLevel(MeilisearchLogLevel.DEBUG);
+```
+
 ### Disable analytics
 
 ```java
@@ -97,7 +113,9 @@ Snapshots are exact copies of Meilisearch data and must be created with the same
 Meilisearch version as the container image that imports them. Use dumps when you
 need a fixture that can move across Meilisearch versions.
 
-Dump and snapshot imports are strict by default. Add the matching helpers when
+Dump and snapshot imports are strict by default. Only one import source can be
+configured per container, and dump helpers only apply to dump imports while
+snapshot helpers only apply to snapshot imports. Add the matching helpers when
 you want Meilisearch to ignore missing import files or keep an existing database:
 
 ```java

@@ -86,6 +86,64 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldConfigureEnvMode() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withEnvMode("development")) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_ENV", "development");
+    }
+  }
+
+  @Test
+  void shouldConfigureTypedEnvMode() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withEnvMode(MeilisearchEnvMode.PRODUCTION)) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_ENV", "production");
+    }
+  }
+
+  @Test
+  void shouldConfigureLogLevel() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withLogLevel("DEBUG")) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_LOG_LEVEL", "DEBUG");
+    }
+  }
+
+  @Test
+  void shouldConfigureTypedLogLevel() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withLogLevel(MeilisearchLogLevel.TRACE)) {
+      assertThat(container.getEnvMap()).containsEntry("MEILI_LOG_LEVEL", "TRACE");
+    }
+  }
+
+  @Test
+  void shouldRejectMixedImportTypes() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withDumpImport("meilisearch/fixtures/movies.dump")) {
+      assertThatThrownBy(() -> container.withSnapshotImport("meilisearch/fixtures/movies.snapshot"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withSnapshotImport("meilisearch/fixtures/movies.snapshot")) {
+      assertThatThrownBy(() -> container.withDumpImport("meilisearch/fixtures/movies.dump"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+  }
+
+  @Test
+  void shouldRejectImportFlagsForDifferentImportType() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreMissingDump()) {
+      assertThatThrownBy(() -> container.withSnapshotImport("meilisearch/fixtures/movies.snapshot"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+
+    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreMissingSnapshot()) {
+      assertThatThrownBy(() -> container.withDumpImport("meilisearch/fixtures/movies.dump"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+  }
+
+  @Test
   void shouldDisableAnalytics() {
     try (MeilisearchContainer container = new MeilisearchContainer().withNoAnalytics()) {
       assertThat(container.getEnvMap()).containsEntry("MEILI_NO_ANALYTICS", "true");

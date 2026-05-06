@@ -67,6 +67,44 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   }
 
   /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(MeilisearchEnvMode envMode) {
+    return withEnvMode(envMode.getValue());
+  }
+
+  /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(String envMode) {
+    this.addEnv("MEILI_ENV", envMode);
+    return self();
+  }
+
+  /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(MeilisearchLogLevel logLevel) {
+    return withLogLevel(logLevel.getValue());
+  }
+
+  /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(String logLevel) {
+    this.addEnv("MEILI_LOG_LEVEL", logLevel);
+    return self();
+  }
+
+  /**
    * Disable Meilisearch analytics for this container.
    * @return The current instance of the Meilisearch container
    */
@@ -90,8 +128,8 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withDumpImport(MountableFile dumpFile) {
+    configureImportType(ImportType.DUMP);
     this.withCopyFileToContainer(dumpFile, DUMP_IMPORT_PATH);
-    this.importType = ImportType.DUMP;
     configureImportCommand();
     return self();
   }
@@ -101,6 +139,7 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withIgnoreMissingDump() {
+    assertImportTypeCompatible(ImportType.DUMP);
     this.ignoreMissingDump = true;
     configureImportCommand();
     return self();
@@ -111,6 +150,7 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withIgnoreDumpIfDbExists() {
+    assertImportTypeCompatible(ImportType.DUMP);
     this.ignoreDumpIfDbExists = true;
     configureImportCommand();
     return self();
@@ -131,8 +171,8 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withSnapshotImport(MountableFile snapshotFile) {
+    configureImportType(ImportType.SNAPSHOT);
     this.withCopyFileToContainer(snapshotFile, SNAPSHOT_IMPORT_PATH);
-    this.importType = ImportType.SNAPSHOT;
     configureImportCommand();
     return self();
   }
@@ -142,6 +182,7 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withIgnoreMissingSnapshot() {
+    assertImportTypeCompatible(ImportType.SNAPSHOT);
     this.ignoreMissingSnapshot = true;
     configureImportCommand();
     return self();
@@ -152,9 +193,31 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withIgnoreSnapshotIfDbExists() {
+    assertImportTypeCompatible(ImportType.SNAPSHOT);
     this.ignoreSnapshotIfDbExists = true;
     configureImportCommand();
     return self();
+  }
+
+  private void configureImportType(ImportType importType) {
+    assertImportTypeCompatible(importType);
+    if (hasFlagsForDifferentImportType(importType)) {
+      throw new IllegalStateException("Import flags must match the configured import type");
+    }
+    this.importType = importType;
+  }
+
+  private void assertImportTypeCompatible(ImportType importType) {
+    if (this.importType != null && this.importType != importType) {
+      throw new IllegalStateException("Only one Meilisearch import type can be configured per container");
+    }
+  }
+
+  private boolean hasFlagsForDifferentImportType(ImportType importType) {
+    if (importType == ImportType.DUMP) {
+      return ignoreMissingSnapshot || ignoreSnapshotIfDbExists;
+    }
+    return ignoreMissingDump || ignoreDumpIfDbExists;
   }
 
   private void configureImportCommand() {
