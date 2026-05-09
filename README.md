@@ -12,69 +12,29 @@ A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisea
 How to use
 ---
 
-Use the `@Container` annotation to start a Meilisearch container in your tests.
-
-### Default image
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer();
-```
-
-### Custom image
+Use the `@Container` annotation to start a Meilisearch container in your tests,
+then connect clients with the container endpoint and master key.
 
 ```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer(
-    DockerImageName.parse("getmeili/meilisearch:v1.43.0"));
+@Testcontainers
+class SearchTest {
+
+    @Container
+    static MeilisearchContainer container = new MeilisearchContainer()
+        .withMasterKey("masterKey");
+
+    @Test
+    void connectsWithSdk() {
+        Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
+    }
+}
 ```
 
-### Configure master key
+The container supports custom images, master keys, environment modes, log levels,
+analytics opt-out, Java SDK client helpers, Spring Boot property wiring, dump
+imports, snapshot imports, and existing-database import flags.
 
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey");
-```
-
-### Java SDK client setup
-
-The container exposes helpers for the Meilisearch Java SDK:
-
-```java
-Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
-```
-
-### Index documents and wait for tasks
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey");
-
-Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
-String indexUid = "movies";
-Index index = client.index(indexUid);
-
-TaskInfo createIndexTask = client.createIndex(indexUid, "id");
-index.waitForTask(createIndexTask.getTaskUid(), 15000, 100);
-
-String documents = "["
-    + "{\"id\":1,\"title\":\"Dune\"},"
-    + "{\"id\":2,\"title\":\"Foundation\"}"
-    + "]";
-TaskInfo addDocumentsTask = index.addDocuments(documents);
-index.waitForTask(addDocumentsTask.getTaskUid(), 15000, 100);
-```
-
-### Import a dump fixture
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey")
-    .withDumpImport("meilisearch/fixtures/movies.dump");
-```
+See [docs/usage.md](docs/usage.md) for full API examples.
 
 Setup
 ---
@@ -108,6 +68,18 @@ If you use the Meilisearch Java SDK in tests, add:
     <scope>test</scope>
 </dependency>
 ```
+
+Development
+---
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, verification commands,
+branch lanes, and Testcontainers testing notes.
+
+Releasing
+---
+
+See [RELEASING.md](RELEASING.md) for stable release, snapshot deployment, and
+post-release version bump steps.
 
 Release lanes
 ---
