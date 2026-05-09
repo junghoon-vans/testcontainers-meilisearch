@@ -41,6 +41,7 @@ Setup
 
 This library is available in Maven Central.
 You can add it as a dependency to your project using the following snippets.
+The `v2.x` line targets Java 17 or newer and Testcontainers 2.x.
 
 ### Gradle
 
