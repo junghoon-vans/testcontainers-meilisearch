@@ -1,5 +1,7 @@
 package io.vanslog.testcontainers.meilisearch;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -14,9 +16,23 @@ import org.testcontainers.utility.MountableFile;
 public class MeilisearchContainer extends GenericContainer<MeilisearchContainer> {
 
   private static final int MEILISEARCH_DEFAULT_PORT = 7700;
-  private static final String DUMP_IMPORT_PATH = "/meili_data/dumps/import.dump";
+  private static final String DUMP_IMPORT_PATH = importPath("dumps", "import.dump");
+  private static final String SNAPSHOT_IMPORT_PATH = importPath("snapshots", "import.snapshot");
   private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("getmeili/meilisearch");
   private static final String DEFAULT_IMAGE_TAG = "v1.43.0";
+
+  private ImportType importType;
+  private boolean ignoreDumpIfDbExists;
+  private boolean ignoreSnapshotIfDbExists;
+
+  private enum ImportType {
+    DUMP,
+    SNAPSHOT
+  }
+
+  private static String importPath(String directory, String fileName) {
+    return String.join("/", "", "meili_data", directory, fileName);
+  }
 
   /**
    * Create a Meilisearch container with default settings
@@ -47,6 +63,54 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     this.addEnv("MEILI_MASTER_KEY", masterKey);
     return self();
   }
+
+  /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(MeilisearchEnvMode envMode) {
+    return withEnvMode(envMode.getValue());
+  }
+
+  /**
+   * Configure the Meilisearch environment mode.
+   * @param envMode The environment mode to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withEnvMode(String envMode) {
+    this.addEnv("MEILI_ENV", envMode);
+    return self();
+  }
+
+  /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(MeilisearchLogLevel logLevel) {
+    return withLogLevel(logLevel.getValue());
+  }
+
+  /**
+   * Configure the Meilisearch log level.
+   * @param logLevel The log level to use
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withLogLevel(String logLevel) {
+    this.addEnv("MEILI_LOG_LEVEL", logLevel);
+    return self();
+  }
+
+  /**
+   * Disable Meilisearch analytics for this container.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withNoAnalytics() {
+    this.addEnv("MEILI_NO_ANALYTICS", "true");
+    return self();
+  }
+
   /**
    * Import a dump fixture from the test classpath when Meilisearch starts.
    * @param classpathResource The dump resource to import
@@ -62,9 +126,99 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withDumpImport(MountableFile dumpFile) {
+    configureImportType(ImportType.DUMP);
     this.withCopyFileToContainer(dumpFile, DUMP_IMPORT_PATH);
-    this.withCommand("meilisearch", "--import-dump", DUMP_IMPORT_PATH);
+    configureImportCommand();
     return self();
+  }
+
+  /**
+   * Start with the existing database when a dump fixture is configured and data already exists.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreDumpIfDbExists() {
+    assertImportTypeCompatible(ImportType.DUMP);
+    this.ignoreDumpIfDbExists = true;
+    configureImportCommand();
+    return self();
+  }
+
+  /**
+   * Import a snapshot fixture from the test classpath when Meilisearch starts.
+   * @param classpathResource The snapshot resource to import
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withSnapshotImport(String classpathResource) {
+    return withSnapshotImport(MountableFile.forClasspathResource(classpathResource));
+  }
+
+  /**
+   * Import a snapshot fixture when Meilisearch starts.
+   * @param snapshotFile The snapshot file to import
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withSnapshotImport(MountableFile snapshotFile) {
+    configureImportType(ImportType.SNAPSHOT);
+    this.withCopyFileToContainer(snapshotFile, SNAPSHOT_IMPORT_PATH);
+    configureImportCommand();
+    return self();
+  }
+
+  /**
+   * Start with the existing database when a snapshot fixture is configured and data already exists.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreSnapshotIfDbExists() {
+    assertImportTypeCompatible(ImportType.SNAPSHOT);
+    this.ignoreSnapshotIfDbExists = true;
+    configureImportCommand();
+    return self();
+  }
+
+  private void configureImportType(ImportType importType) {
+    assertImportTypeCompatible(importType);
+    if (hasFlagsForDifferentImportType(importType)) {
+      throw new IllegalStateException("Import flags must match the configured import type");
+    }
+    this.importType = importType;
+  }
+
+  private void assertImportTypeCompatible(ImportType importType) {
+    if (this.importType != null && this.importType != importType) {
+      throw new IllegalStateException("Only one Meilisearch import type can be configured per container");
+    }
+  }
+
+  private boolean hasFlagsForDifferentImportType(ImportType importType) {
+    if (importType == ImportType.DUMP) {
+      return ignoreSnapshotIfDbExists;
+    }
+    return ignoreDumpIfDbExists;
+  }
+
+  private void configureImportCommand() {
+    if (importType == null) {
+      return;
+    }
+
+    List<String> command = new ArrayList<>();
+    command.add("meilisearch");
+    if (importType == ImportType.DUMP) {
+      command.add("--import-dump");
+      command.add(DUMP_IMPORT_PATH);
+      addFlag(command, ignoreDumpIfDbExists, "--ignore-dump-if-db-exists");
+    } else {
+      command.add("--import-snapshot");
+      command.add(SNAPSHOT_IMPORT_PATH);
+      addFlag(command, ignoreSnapshotIfDbExists, "--ignore-snapshot-if-db-exists");
+    }
+    this.withCommand(command.toArray(new String[0]));
+  }
+
+  private static void addFlag(List<String> command, boolean enabled, String flag) {
+    if (enabled) {
+      command.add(flag);
+    }
   }
 
   /**

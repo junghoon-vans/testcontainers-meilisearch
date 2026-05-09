@@ -15,12 +15,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Dump import integration tests for {@link MeilisearchContainer}.
+ * Snapshot import integration tests for {@link MeilisearchContainer}.
  *
  * @author Junghoon Ban
  */
 @Testcontainers
-class MeilisearchContainerDumpImportTest {
+class MeilisearchContainerSnapshotImportTest {
 
   @Container
   private static final MeilisearchContainer meilisearchContainer = createMeilisearchContainer();
@@ -29,11 +29,11 @@ class MeilisearchContainerDumpImportTest {
   private static MeilisearchContainer createMeilisearchContainer() {
     return new MeilisearchContainer()
         .withMasterKey("masterKey")
-        .withDumpImport("meilisearch/fixtures/movies.dump");
+        .withSnapshotImport("meilisearch/fixtures/movies.snapshot");
   }
 
   @Test
-  void shouldImportDumpFixture() throws Exception {
+  void shouldImportSnapshotFixture() throws Exception {
     Client client = new Client(new Config(
         meilisearchContainer.getEndpoint(),
         meilisearchContainer.getMasterKey()));
@@ -50,13 +50,13 @@ class MeilisearchContainerDumpImportTest {
   }
 
   @Test
-  void shouldImportDumpFixtureWithIgnoreDatabaseExistsFlag() throws Exception {
+  void shouldImportSnapshotFixtureWithIgnoreDatabaseExistsFlag() throws Exception {
     MeilisearchContainer container = new MeilisearchContainer();
     try {
       container
           .withMasterKey("masterKey")
-          .withDumpImport("meilisearch/fixtures/movies.dump")
-          .withIgnoreDumpIfDbExists();
+          .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
+          .withIgnoreSnapshotIfDbExists();
       container.start();
 
       Client client = new Client(new Config(
@@ -78,7 +78,7 @@ class MeilisearchContainerDumpImportTest {
   }
 
   @Test
-  void shouldIgnoreDumpImportWhenDatabaseExists() throws Exception {
+  void shouldIgnoreSnapshotImportWhenDatabaseExists() throws Exception {
     String volumeName = newVolumeName();
     seedExistingDatabase(volumeName);
 
@@ -86,8 +86,8 @@ class MeilisearchContainerDumpImportTest {
     try {
       withDataVolume(container, volumeName)
           .withMasterKey("masterKey")
-          .withDumpImport("meilisearch/fixtures/movies.dump")
-          .withIgnoreDumpIfDbExists();
+          .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
+          .withIgnoreSnapshotIfDbExists();
       container.start();
 
       Client client = new Client(new Config(
