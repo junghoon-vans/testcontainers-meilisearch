@@ -1,6 +1,6 @@
 # Development
 
-This project is a Java 11-compatible Testcontainers module for Meilisearch.
+The `main` / `v2.x` branch targets Java 17 or newer and Testcontainers 2.x.
 
 ## Requirements
 
