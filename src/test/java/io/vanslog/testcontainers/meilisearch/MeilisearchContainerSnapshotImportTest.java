@@ -43,4 +43,33 @@ class MeilisearchContainerSnapshotImportTest {
         .extracting(hit -> hit.get("title"))
         .isEqualTo("Dune");
   }
+
+  @Test
+  void shouldImportSnapshotFixtureWithIgnoreFlags() throws Exception {
+    MeilisearchContainer container = new MeilisearchContainer();
+    try {
+      container
+          .withMasterKey("masterKey")
+          .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
+          .withIgnoreMissingSnapshot()
+          .withIgnoreSnapshotIfDbExists();
+      container.start();
+
+      Client client = new Client(new Config(
+          container.getEndpoint(),
+          container.getMasterKey()));
+
+      assertThat(client.isHealthy()).isTrue();
+
+      SearchResult searchResult = client.index("movies").search("dune");
+
+      assertThat(searchResult.getEstimatedTotalHits()).isEqualTo(1);
+      assertThat(searchResult.getHits())
+          .singleElement()
+          .extracting(hit -> hit.get("title"))
+          .isEqualTo("Dune");
+    } finally {
+      container.close();
+    }
+  }
 }
