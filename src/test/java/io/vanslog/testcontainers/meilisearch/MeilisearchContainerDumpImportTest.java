@@ -50,13 +50,12 @@ class MeilisearchContainerDumpImportTest {
   }
 
   @Test
-  void shouldImportDumpFixtureWithIgnoreFlags() throws Exception {
+  void shouldImportDumpFixtureWithIgnoreDatabaseExistsFlag() throws Exception {
     MeilisearchContainer container = new MeilisearchContainer();
     try {
       container
           .withMasterKey("masterKey")
           .withDumpImport("meilisearch/fixtures/movies.dump")
-          .withIgnoreMissingDump()
           .withIgnoreDumpIfDbExists();
       container.start();
 

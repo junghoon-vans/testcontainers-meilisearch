@@ -22,9 +22,7 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   private static final String DEFAULT_IMAGE_TAG = "v1.43.0";
 
   private ImportType importType;
-  private boolean ignoreMissingDump;
   private boolean ignoreDumpIfDbExists;
-  private boolean ignoreMissingSnapshot;
   private boolean ignoreSnapshotIfDbExists;
 
   private enum ImportType {
@@ -135,17 +133,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   }
 
   /**
-   * Start normally when the configured dump fixture is missing.
-   * @return The current instance of the Meilisearch container
-   */
-  public MeilisearchContainer withIgnoreMissingDump() {
-    assertImportTypeCompatible(ImportType.DUMP);
-    this.ignoreMissingDump = true;
-    configureImportCommand();
-    return self();
-  }
-
-  /**
    * Start with the existing database when a dump fixture is configured and data already exists.
    * @return The current instance of the Meilisearch container
    */
@@ -178,17 +165,6 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   }
 
   /**
-   * Start normally when the configured snapshot fixture is missing.
-   * @return The current instance of the Meilisearch container
-   */
-  public MeilisearchContainer withIgnoreMissingSnapshot() {
-    assertImportTypeCompatible(ImportType.SNAPSHOT);
-    this.ignoreMissingSnapshot = true;
-    configureImportCommand();
-    return self();
-  }
-
-  /**
    * Start with the existing database when a snapshot fixture is configured and data already exists.
    * @return The current instance of the Meilisearch container
    */
@@ -215,9 +191,9 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
 
   private boolean hasFlagsForDifferentImportType(ImportType importType) {
     if (importType == ImportType.DUMP) {
-      return ignoreMissingSnapshot || ignoreSnapshotIfDbExists;
+      return ignoreSnapshotIfDbExists;
     }
-    return ignoreMissingDump || ignoreDumpIfDbExists;
+    return ignoreDumpIfDbExists;
   }
 
   private void configureImportCommand() {
@@ -230,12 +206,10 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
     if (importType == ImportType.DUMP) {
       command.add("--import-dump");
       command.add(DUMP_IMPORT_PATH);
-      addFlag(command, ignoreMissingDump, "--ignore-missing-dump");
       addFlag(command, ignoreDumpIfDbExists, "--ignore-dump-if-db-exists");
     } else {
       command.add("--import-snapshot");
       command.add(SNAPSHOT_IMPORT_PATH);
-      addFlag(command, ignoreMissingSnapshot, "--ignore-missing-snapshot");
       addFlag(command, ignoreSnapshotIfDbExists, "--ignore-snapshot-if-db-exists");
     }
     this.withCommand(command.toArray(new String[0]));

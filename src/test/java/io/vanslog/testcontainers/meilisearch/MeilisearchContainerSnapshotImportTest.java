@@ -50,13 +50,12 @@ class MeilisearchContainerSnapshotImportTest {
   }
 
   @Test
-  void shouldImportSnapshotFixtureWithIgnoreFlags() throws Exception {
+  void shouldImportSnapshotFixtureWithIgnoreDatabaseExistsFlag() throws Exception {
     MeilisearchContainer container = new MeilisearchContainer();
     try {
       container
           .withMasterKey("masterKey")
           .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
-          .withIgnoreMissingSnapshot()
           .withIgnoreSnapshotIfDbExists();
       container.start();
 

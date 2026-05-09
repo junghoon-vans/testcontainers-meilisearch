@@ -116,13 +116,12 @@ need a fixture that can move across Meilisearch versions.
 Dump and snapshot imports are strict by default. Only one import source can be
 configured per container, and dump helpers only apply to dump imports while
 snapshot helpers only apply to snapshot imports. Add the matching helpers when
-you want Meilisearch to ignore missing import files or keep an existing database:
+you want Meilisearch to keep an existing database instead of importing a fixture:
 
 ```java
 @Container
 static MeilisearchContainer container = new MeilisearchContainer()
     .withDumpImport("meilisearch/fixtures/movies.dump")
-    .withIgnoreMissingDump()
     .withIgnoreDumpIfDbExists();
 ```
 
@@ -130,7 +129,6 @@ static MeilisearchContainer container = new MeilisearchContainer()
 @Container
 static MeilisearchContainer container = new MeilisearchContainer()
     .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
-    .withIgnoreMissingSnapshot()
     .withIgnoreSnapshotIfDbExists();
 ```
 

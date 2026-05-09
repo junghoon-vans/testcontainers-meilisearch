@@ -49,18 +49,17 @@ class MeilisearchContainerTest {
         .withDumpImport("meilisearch/fixtures/movies.dump")) {
       assertThat(container.getCommandParts())
           .contains("--import-dump")
-          .doesNotContain("--ignore-missing-dump", "--ignore-dump-if-db-exists");
+          .doesNotContain("--ignore-dump-if-db-exists");
     }
   }
 
   @Test
-  void shouldConfigureDumpImportFlags() {
+  void shouldConfigureDumpImportIfDatabaseExistsFlag() {
     try (MeilisearchContainer container = new MeilisearchContainer()
         .withDumpImport("meilisearch/fixtures/movies.dump")
-        .withIgnoreMissingDump()
         .withIgnoreDumpIfDbExists()) {
       assertThat(container.getCommandParts())
-          .contains("--import-dump", "--ignore-missing-dump", "--ignore-dump-if-db-exists");
+          .contains("--import-dump", "--ignore-dump-if-db-exists");
     }
   }
 
@@ -70,18 +69,17 @@ class MeilisearchContainerTest {
         .withSnapshotImport("meilisearch/fixtures/movies.snapshot")) {
       assertThat(container.getCommandParts())
           .contains("--import-snapshot")
-          .doesNotContain("--ignore-missing-snapshot", "--ignore-snapshot-if-db-exists");
+          .doesNotContain("--ignore-snapshot-if-db-exists");
     }
   }
 
   @Test
-  void shouldConfigureSnapshotImportFlags() {
+  void shouldConfigureSnapshotImportIfDatabaseExistsFlag() {
     try (MeilisearchContainer container = new MeilisearchContainer()
-        .withIgnoreMissingSnapshot()
         .withIgnoreSnapshotIfDbExists()
         .withSnapshotImport("meilisearch/fixtures/movies.snapshot")) {
       assertThat(container.getCommandParts())
-          .contains("--import-snapshot", "--ignore-missing-snapshot", "--ignore-snapshot-if-db-exists");
+          .contains("--import-snapshot", "--ignore-snapshot-if-db-exists");
     }
   }
 
@@ -132,12 +130,12 @@ class MeilisearchContainerTest {
 
   @Test
   void shouldRejectImportFlagsForDifferentImportType() {
-    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreMissingDump()) {
+    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreDumpIfDbExists()) {
       assertThatThrownBy(() -> container.withSnapshotImport("meilisearch/fixtures/movies.snapshot"))
           .isInstanceOf(IllegalStateException.class);
     }
 
-    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreMissingSnapshot()) {
+    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreSnapshotIfDbExists()) {
       assertThatThrownBy(() -> container.withDumpImport("meilisearch/fixtures/movies.dump"))
           .isInstanceOf(IllegalStateException.class);
     }
