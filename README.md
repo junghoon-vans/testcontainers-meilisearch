@@ -69,6 +69,46 @@ The container exposes helpers for the Meilisearch Java SDK:
 Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
 ```
 
+### JUnit 5 integration
+
+```java
+@Testcontainers
+class SearchTest {
+
+    @Container
+    static MeilisearchContainer container = new MeilisearchContainer()
+        .withMasterKey("masterKey");
+
+    @Test
+    void connectsWithSdk() {
+        Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
+    }
+}
+```
+
+### Spring Boot integration
+
+For Spring Boot tests, register your own application properties from the container.
+Spring Boot 3.1+ can also wire custom containers through its Testcontainers
+support if you prefer.
+
+```java
+@Testcontainers
+@SpringBootTest
+class SearchIntegrationTest {
+
+    @Container
+    static MeilisearchContainer container = new MeilisearchContainer()
+        .withMasterKey("masterKey");
+
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("app.search.endpoint", container::getEndpoint);
+        registry.add("app.search.api-key", container::getMasterKey);
+    }
+}
+```
+
 ### Index documents and wait for tasks
 
 ```java
