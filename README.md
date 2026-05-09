@@ -45,7 +45,7 @@ You can add it as a dependency to your project using the following snippets.
 ### Gradle
 
 ```groovy
-testImplementation 'io.vanslog:testcontainers-meilisearch:1.1.0'
+testImplementation 'io.vanslog:testcontainers-meilisearch:1.2.0'
 ```
 
 ### Maven
@@ -53,7 +53,7 @@ testImplementation 'io.vanslog:testcontainers-meilisearch:1.1.0'
 <dependency>
     <groupId>io.vanslog</groupId>
     <artifactId>testcontainers-meilisearch</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <scope>test</scope>
 </dependency>
 ```
