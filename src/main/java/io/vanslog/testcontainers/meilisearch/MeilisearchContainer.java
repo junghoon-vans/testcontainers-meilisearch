@@ -1,5 +1,7 @@
 package io.vanslog.testcontainers.meilisearch;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -18,6 +20,15 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
   private static final String SNAPSHOT_IMPORT_PATH = importPath("snapshots", "import.snapshot");
   private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("getmeili/meilisearch");
   private static final String DEFAULT_IMAGE_TAG = "v1.43.0";
+
+  private ImportType importType;
+  private boolean ignoreDumpIfDbExists;
+  private boolean ignoreSnapshotIfDbExists;
+
+  private enum ImportType {
+    DUMP,
+    SNAPSHOT
+  }
 
   private static String importPath(String directory, String fileName) {
     return String.join("/", "", "meili_data", directory, fileName);
@@ -115,8 +126,20 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withDumpImport(MountableFile dumpFile) {
+    configureImportType(ImportType.DUMP);
     this.withCopyFileToContainer(dumpFile, DUMP_IMPORT_PATH);
-    this.withCommand("meilisearch", "--import-dump", DUMP_IMPORT_PATH);
+    configureImportCommand();
+    return self();
+  }
+
+  /**
+   * Start with the existing database when a dump fixture is configured and data already exists.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreDumpIfDbExists() {
+    assertImportTypeCompatible(ImportType.DUMP);
+    this.ignoreDumpIfDbExists = true;
+    configureImportCommand();
     return self();
   }
 
@@ -135,9 +158,67 @@ public class MeilisearchContainer extends GenericContainer<MeilisearchContainer>
    * @return The current instance of the Meilisearch container
    */
   public MeilisearchContainer withSnapshotImport(MountableFile snapshotFile) {
+    configureImportType(ImportType.SNAPSHOT);
     this.withCopyFileToContainer(snapshotFile, SNAPSHOT_IMPORT_PATH);
-    this.withCommand("meilisearch", "--import-snapshot", SNAPSHOT_IMPORT_PATH);
+    configureImportCommand();
     return self();
+  }
+
+  /**
+   * Start with the existing database when a snapshot fixture is configured and data already exists.
+   * @return The current instance of the Meilisearch container
+   */
+  public MeilisearchContainer withIgnoreSnapshotIfDbExists() {
+    assertImportTypeCompatible(ImportType.SNAPSHOT);
+    this.ignoreSnapshotIfDbExists = true;
+    configureImportCommand();
+    return self();
+  }
+
+  private void configureImportType(ImportType importType) {
+    assertImportTypeCompatible(importType);
+    if (hasFlagsForDifferentImportType(importType)) {
+      throw new IllegalStateException("Import flags must match the configured import type");
+    }
+    this.importType = importType;
+  }
+
+  private void assertImportTypeCompatible(ImportType importType) {
+    if (this.importType != null && this.importType != importType) {
+      throw new IllegalStateException("Only one Meilisearch import type can be configured per container");
+    }
+  }
+
+  private boolean hasFlagsForDifferentImportType(ImportType importType) {
+    if (importType == ImportType.DUMP) {
+      return ignoreSnapshotIfDbExists;
+    }
+    return ignoreDumpIfDbExists;
+  }
+
+  private void configureImportCommand() {
+    if (importType == null) {
+      return;
+    }
+
+    List<String> command = new ArrayList<>();
+    command.add("meilisearch");
+    if (importType == ImportType.DUMP) {
+      command.add("--import-dump");
+      command.add(DUMP_IMPORT_PATH);
+      addFlag(command, ignoreDumpIfDbExists, "--ignore-dump-if-db-exists");
+    } else {
+      command.add("--import-snapshot");
+      command.add(SNAPSHOT_IMPORT_PATH);
+      addFlag(command, ignoreSnapshotIfDbExists, "--ignore-snapshot-if-db-exists");
+    }
+    this.withCommand(command.toArray(new String[0]));
+  }
+
+  private static void addFlag(List<String> command, boolean enabled, String flag) {
+    if (enabled) {
+      command.add(flag);
+    }
   }
 
   /**

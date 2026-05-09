@@ -44,6 +44,46 @@ class MeilisearchContainerTest {
   }
 
   @Test
+  void shouldKeepDumpImportStrictByDefault() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withDumpImport("meilisearch/fixtures/movies.dump")) {
+      assertThat(container.getCommandParts())
+          .contains("--import-dump")
+          .doesNotContain("--ignore-dump-if-db-exists");
+    }
+  }
+
+  @Test
+  void shouldConfigureDumpImportIfDatabaseExistsFlag() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withDumpImport("meilisearch/fixtures/movies.dump")
+        .withIgnoreDumpIfDbExists()) {
+      assertThat(container.getCommandParts())
+          .contains("--import-dump", "--ignore-dump-if-db-exists");
+    }
+  }
+
+  @Test
+  void shouldKeepSnapshotImportStrictByDefault() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withSnapshotImport("meilisearch/fixtures/movies.snapshot")) {
+      assertThat(container.getCommandParts())
+          .contains("--import-snapshot")
+          .doesNotContain("--ignore-snapshot-if-db-exists");
+    }
+  }
+
+  @Test
+  void shouldConfigureSnapshotImportIfDatabaseExistsFlag() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withIgnoreSnapshotIfDbExists()
+        .withSnapshotImport("meilisearch/fixtures/movies.snapshot")) {
+      assertThat(container.getCommandParts())
+          .contains("--import-snapshot", "--ignore-snapshot-if-db-exists");
+    }
+  }
+
+  @Test
   void shouldConfigureEnvMode() {
     try (MeilisearchContainer container = new MeilisearchContainer().withEnvMode("development")) {
       assertThat(container.getEnvMap()).containsEntry("MEILI_ENV", "development");
@@ -70,6 +110,34 @@ class MeilisearchContainerTest {
     try (MeilisearchContainer container = new MeilisearchContainer()
         .withLogLevel(MeilisearchLogLevel.TRACE)) {
       assertThat(container.getEnvMap()).containsEntry("MEILI_LOG_LEVEL", "TRACE");
+    }
+  }
+
+  @Test
+  void shouldRejectMixedImportTypes() {
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withDumpImport("meilisearch/fixtures/movies.dump")) {
+      assertThatThrownBy(() -> container.withSnapshotImport("meilisearch/fixtures/movies.snapshot"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+
+    try (MeilisearchContainer container = new MeilisearchContainer()
+        .withSnapshotImport("meilisearch/fixtures/movies.snapshot")) {
+      assertThatThrownBy(() -> container.withDumpImport("meilisearch/fixtures/movies.dump"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+  }
+
+  @Test
+  void shouldRejectImportFlagsForDifferentImportType() {
+    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreDumpIfDbExists()) {
+      assertThatThrownBy(() -> container.withSnapshotImport("meilisearch/fixtures/movies.snapshot"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+
+    try (MeilisearchContainer container = new MeilisearchContainer().withIgnoreSnapshotIfDbExists()) {
+      assertThatThrownBy(() -> container.withDumpImport("meilisearch/fixtures/movies.dump"))
+          .isInstanceOf(IllegalStateException.class);
     }
   }
 
