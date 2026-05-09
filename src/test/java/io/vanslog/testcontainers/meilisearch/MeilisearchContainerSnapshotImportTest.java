@@ -5,10 +5,10 @@ import com.meilisearch.sdk.Config;
 import com.meilisearch.sdk.Index;
 import com.meilisearch.sdk.model.SearchResult;
 import com.meilisearch.sdk.model.TaskInfo;
-import java.nio.file.Path;
+import com.github.dockerjava.api.model.Bind;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.testcontainers.containers.BindMode;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -79,13 +79,13 @@ class MeilisearchContainerSnapshotImportTest {
   }
 
   @Test
-  void shouldIgnoreSnapshotImportWhenDatabaseExists(@TempDir Path dataDirectory) throws Exception {
-    seedExistingDatabase(dataDirectory);
+  void shouldIgnoreSnapshotImportWhenDatabaseExists() throws Exception {
+    String volumeName = newVolumeName();
+    seedExistingDatabase(volumeName);
 
     MeilisearchContainer container = new MeilisearchContainer();
     try {
-      container
-          .withFileSystemBind(dataDirectory.toString(), "/meili_data", BindMode.READ_WRITE)
+      withDataVolume(container, volumeName)
           .withMasterKey("masterKey")
           .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
           .withIgnoreSnapshotIfDbExists();
@@ -106,14 +106,14 @@ class MeilisearchContainerSnapshotImportTest {
           .isEqualTo("Arrival");
     } finally {
       container.close();
+      removeVolume(volumeName);
     }
   }
 
-  private static void seedExistingDatabase(Path dataDirectory) throws Exception {
+  private static void seedExistingDatabase(String volumeName) throws Exception {
     MeilisearchContainer container = new MeilisearchContainer();
     try {
-      container
-          .withFileSystemBind(dataDirectory.toString(), "/meili_data", BindMode.READ_WRITE)
+      withDataVolume(container, volumeName)
           .withMasterKey("masterKey");
       container.start();
 
@@ -131,5 +131,19 @@ class MeilisearchContainerSnapshotImportTest {
     } finally {
       container.close();
     }
+  }
+
+  private static MeilisearchContainer withDataVolume(MeilisearchContainer container, String volumeName) {
+    return container.withCreateContainerCmdModifier(command -> command
+        .getHostConfig()
+        .withBinds(Bind.parse(volumeName + ":/meili_data")));
+  }
+
+  private static String newVolumeName() {
+    return "testcontainers-meilisearch-" + UUID.randomUUID();
+  }
+
+  private static void removeVolume(String volumeName) {
+    DockerClientFactory.instance().client().removeVolumeCmd(volumeName).exec();
   }
 }
