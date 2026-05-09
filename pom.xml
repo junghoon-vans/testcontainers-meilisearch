@@ -6,7 +6,7 @@
 
   <groupId>io.vanslog</groupId>
   <artifactId>testcontainers-meilisearch</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2.0</version>
 
   <name>testcontainers-meilisearch</name>
   <description>Testcontainers Meilisearch</description>
