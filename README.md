@@ -12,64 +12,8 @@ A [Testcontainers](https://www.testcontainers.org/) implementation for [Meilisea
 How to use
 ---
 
-Use the `@Container` annotation to start a Meilisearch container in your tests.
-
-### Default image
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer();
-```
-
-### Custom image
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer(
-    DockerImageName.parse("getmeili/meilisearch:v1.43.0"));
-```
-
-### Configure master key
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey");
-```
-
-### Configure environment mode
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer()
-    .withEnvMode(MeilisearchEnvMode.DEVELOPMENT);
-```
-
-### Configure log level
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer()
-    .withLogLevel(MeilisearchLogLevel.DEBUG);
-```
-
-### Disable analytics
-
-```java
-@Container
-MeilisearchContainer container = new MeilisearchContainer()
-    .withNoAnalytics();
-```
-
-### Java SDK client setup
-
-The container exposes helpers for the Meilisearch Java SDK:
-
-```java
-Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
-```
-
-### JUnit 5 integration
+Use the `@Container` annotation to start a Meilisearch container in your tests,
+then connect clients with the container endpoint and master key.
 
 ```java
 @Testcontainers
@@ -86,91 +30,11 @@ class SearchTest {
 }
 ```
 
-### Spring Boot integration
+The container supports custom images, master keys, environment modes, log levels,
+analytics opt-out, Java SDK client helpers, Spring Boot property wiring, dump
+imports, snapshot imports, and existing-database import flags.
 
-For Spring Boot tests, register your own application properties from the container.
-Spring Boot 3.1+ can also wire custom containers through its Testcontainers
-support if you prefer.
-
-```java
-@Testcontainers
-@SpringBootTest
-class SearchIntegrationTest {
-
-    @Container
-    static MeilisearchContainer container = new MeilisearchContainer()
-        .withMasterKey("masterKey");
-
-    @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("app.search.endpoint", container::getEndpoint);
-        registry.add("app.search.api-key", container::getMasterKey);
-    }
-}
-```
-
-### Index documents and wait for tasks
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey");
-
-Client client = new Client(new Config(container.getEndpoint(), container.getMasterKey()));
-String indexUid = "movies";
-Index index = client.index(indexUid);
-
-TaskInfo createIndexTask = client.createIndex(indexUid, "id");
-index.waitForTask(createIndexTask.getTaskUid(), 15000, 100);
-
-String documents = "["
-    + "{\"id\":1,\"title\":\"Dune\"},"
-    + "{\"id\":2,\"title\":\"Foundation\"}"
-    + "]";
-TaskInfo addDocumentsTask = index.addDocuments(documents);
-index.waitForTask(addDocumentsTask.getTaskUid(), 15000, 100);
-```
-
-### Import a dump fixture
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey")
-    .withDumpImport("meilisearch/fixtures/movies.dump");
-```
-
-### Import a snapshot fixture
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withMasterKey("masterKey")
-    .withSnapshotImport("meilisearch/fixtures/movies.snapshot");
-```
-
-Snapshots are exact copies of Meilisearch data and must be created with the same
-Meilisearch version as the container image that imports them. Use dumps when you
-need a fixture that can move across Meilisearch versions.
-
-Dump and snapshot imports are strict by default. Only one import source can be
-configured per container, and dump helpers only apply to dump imports while
-snapshot helpers only apply to snapshot imports. Add the matching helpers when
-you want Meilisearch to keep an existing database instead of importing a fixture:
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withDumpImport("meilisearch/fixtures/movies.dump")
-    .withIgnoreDumpIfDbExists();
-```
-
-```java
-@Container
-static MeilisearchContainer container = new MeilisearchContainer()
-    .withSnapshotImport("meilisearch/fixtures/movies.snapshot")
-    .withIgnoreSnapshotIfDbExists();
-```
+See [docs/usage.md](docs/usage.md) for full API examples.
 
 Setup
 ---
